@@ -7,14 +7,16 @@ type TrackProps = {
     event: string
     anonymousId?: string
     externalId?: string
-    traits: Record<string, any>
+    properties: Record<string, any>
 }
 
 type IdentifyProps = {
     anonymousId?: string
     externalId: string
-    phone: string
-    email: string
+    phone?: string
+    email?: string
+    timezone?: string
+    locale?: string
     traits: Record<string, any>
 }
 
@@ -32,16 +34,26 @@ export class Client {
         this.#urlEndpoint = props.urlEndpoint
     }
 
-    async track(props: TrackProps) {
-        return await this.#request('track', props)
+    async track({ properties: data, ...props }: TrackProps) {
+        return await this.#request('track', { ...props, data })
     }
 
-    async identify(props: IdentifyProps) {
-        return await this.#request('identify', props)
+    async identify({ traits: data, ...props }: IdentifyProps) {
+        return await this.#request('identify', { ...props, data })
     }
 
     async alias(props: AliasProps) {
         return await this.#request('identify', props)
+    }
+
+    #mapKeys(obj: Record<string, any>) {
+        const camelToUnderscore = (key: string) => key.replace( /([A-Z])/g, "_$1" ).toLowerCase()
+        
+        const newObj: Record<string, any> = {}
+        for (const key in obj) {
+            newObj[camelToUnderscore(key)] = obj[key]
+        }
+        return newObj
     }
 
     async #request(path: string, data: Record<string, any>) {
@@ -51,9 +63,9 @@ export class Client {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${this.#apiKey}`,
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify(this.#mapKeys(data)),
         })
-        return await request.json()
+        return await request.text()
     }
 }
 
@@ -71,8 +83,8 @@ export class BrowserClient extends Client {
     async track(props: TrackProps) {
         return await this.#client.track({
             ...props,
-            anonymousId: this.#anonymousId,
-            externalId: this.#externalId
+            anonymousId: props.anonymousId ?? this.#anonymousId,
+            externalId: props.externalId ?? this.#externalId,
         })
     }
 
@@ -80,8 +92,8 @@ export class BrowserClient extends Client {
         this.#externalId = props.externalId
         return await this.#client.identify({
             ...props,
-            anonymousId: this.#anonymousId,
-            externalId: this.#externalId
+            anonymousId: props.anonymousId ?? this.#anonymousId,
+            externalId: props.externalId ?? this.#externalId,
         })
     }
 
