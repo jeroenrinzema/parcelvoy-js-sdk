@@ -1,0 +1,36 @@
+{
+  "name": "@parcelvoy/js-sdk",
+  "version": "0.1.0",
+  "description": "Parcelvoy Javascript SDK for collecting events",
+  "scripts": {
+    "package:build": "rimraf lib/ && npm run package:build:esm && npm run package:build:cjs",
+    "package:build:esm": "tsc --project ./tsconfig.module.json",
+    "package:build:cjs": "tsc --project ./tsconfig.json",
+    "package:publish": "npm run package:build && npm version $npm_config_tag --no-git-tag-version && npm pack && npm publish --tag=latest --access public"
+  },
+  "types": "./lib/cjs/mod.d.ts",
+  "main": "./lib/cjs/mod.js",
+  "module": "./lib/esm/mod.js",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "keywords": [
+    "parcelvoy",
+    "js"
+  ],
+  "author": "Chris Anderson",
+  "license": "MIT",
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.2"
+  }
+}
