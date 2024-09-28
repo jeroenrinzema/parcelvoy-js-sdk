@@ -21,7 +21,7 @@ yarn add @parcelvoy/js-sdk
 script tag
 
 ```
-<script src="https://unpkg.com/@parcelvoy/js-sdk/esm/index.js"></script>
+<script src="https://unpkg.com/@parcelvoy/js-sdk/lib/esm/index.js"></script>
 ```
 
 ## Usage
